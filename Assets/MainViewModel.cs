@@ -341,7 +341,7 @@ public class MainViewModel : MonoBehaviour
     void Update()
     {
 #if ENABLE_WINMD_SUPPORT
-        if (!tryConnectToPeer && !IsConnectedToPeer)
+        if (!tryConnectToPeer && SelectedPeer != null && !IsConnectedToPeer)
         {
             ConnectToPeerCommandExecute(null);
             tryConnectToPeer = true;
