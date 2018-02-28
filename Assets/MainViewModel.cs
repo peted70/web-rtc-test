@@ -335,9 +335,17 @@ public class MainViewModel : MonoBehaviour
 #endif
     }
 
+    bool tryConnectToPeer = false;
+
     // Update is called once per frame
     void Update()
     {
-
+#if ENABLE_WINMD_SUPPORT
+        if (!tryConnectToPeer && !IsConnectedToPeer)
+        {
+            ConnectToPeerCommandExecute(null);
+            tryConnectToPeer = true;
+        }
+#endif
     }
 }
