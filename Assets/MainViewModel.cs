@@ -13,6 +13,9 @@ using PeerConnectionClient.Signalling;
 
 public class MainViewModel : MonoBehaviour
 {
+    public string ServerIP = "52.174.16.92";
+    public int PortNumber = 8888;
+
 #if ENABLE_WINMD_SUPPORT
     private MediaVideoTrack _peerVideoTrack;
     public CodecInfo SelectedVideoCodec;
@@ -307,7 +310,7 @@ public class MainViewModel : MonoBehaviour
 #if ENABLE_WINMD_SUPPORT
         new Task(() =>
         {
-            Conductor.Instance.StartLogin("192.168.0.70", "811");
+            Conductor.Instance.StartLogin(ServerIP, PortNumber.ToString());
         }).Start();
 #endif
     }
