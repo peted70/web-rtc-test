@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using PeerConnectionClient.Model;
 using System;
 using System.Linq;
-using Windows.Media.MediaProperties;
 #if ENABLE_WINMD_SUPPORT
+using Windows.Media.MediaProperties;
 using Windows.UI.Core;
 using Org.WebRtc;
 using PeerConnectionClient.Signalling;
@@ -16,6 +16,7 @@ public class MainViewModel : MonoBehaviour
 {
     public string ServerIP = "52.174.16.92";
     public int PortNumber = 8888;
+    public string AutoConnect = "mtaultybook";
 
 #if ENABLE_WINMD_SUPPORT
     private MediaVideoTrack _peerVideoTrack;
@@ -38,7 +39,7 @@ public class MainViewModel : MonoBehaviour
 
         Conductor.Instance.Signaller.OnPeerConnected += (peerId, peerName) =>
         {
-            if (peerName.ToLower().Contains("mtaultybook"))
+            if (peerName.ToLower().Contains(AutoConnect))
             {
                 SelectedPeer = new Peer { Id = peerId, Name = peerName };
             }
