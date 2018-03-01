@@ -147,7 +147,7 @@
 //    // Update is called once per frame
 //    void Update ()
 //    {
-		
+
 //	}
 //}
 
@@ -345,7 +345,9 @@ namespace PeerConnectionClient.Signalling
               (int)VideoCaptureProfile.Width, (int)VideoCaptureProfile.Height, (int)VideoCaptureProfile.FrameRate);
 #else
                 Org.WebRtc.WebRTC.SetPreferredVideoCaptureFormat(
-                              (int)VideoCaptureProfile.Width, (int)VideoCaptureProfile.Height, (int)VideoCaptureProfile.FrameRate);
+                              (int)VideoCaptureProfile.Width,
+                              (int)VideoCaptureProfile.Height,
+                              (int)VideoCaptureProfile.FrameRate);
 #endif
             }
         }
@@ -412,7 +414,7 @@ namespace PeerConnectionClient.Signalling
                 // Always include audio/video enabled in the media stream,
                 // so it will be possible to enable/disable audio/video if 
                 // the call was initiated without microphone/camera
-                audioEnabled = true,
+                audioEnabled = false,
                 videoEnabled = true
             };
 

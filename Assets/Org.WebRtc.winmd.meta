@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: a9938148b8efab240a603fac6d04d33f
-timeCreated: 1519329853
+guid: 44d00084af46ca1409680406466b6862
+timeCreated: 1519840586
 licenseType: Pro
 PluginImporter:
   externalObjects: {}
@@ -19,8 +19,6 @@ PluginImporter:
         Exclude Linux: 1
         Exclude Linux64: 1
         Exclude LinuxUniversal: 1
-        Exclude OSXIntel: 1
-        Exclude OSXIntel64: 1
         Exclude OSXUniversal: 1
         Exclude Win: 1
         Exclude Win64: 1
@@ -63,13 +61,7 @@ PluginImporter:
       settings:
         CPU: x86_64
   - first:
-      Standalone: OSXIntel
-    second:
-      enabled: 0
-      settings:
-        CPU: AnyCPU
-  - first:
-      Standalone: OSXIntel64
+      Standalone: OSXUniversal
     second:
       enabled: 0
       settings:
@@ -94,8 +86,8 @@ PluginImporter:
         CPU: AnyCPU
         DontProcess: True
         PlaceholderPath: 
-        SDK: AnySDK
-        ScriptingBackend: AnyScriptingBackend
+        SDK: UWP
+        ScriptingBackend: DotNet
   - first:
       XboxOne: XboxOne
     second:

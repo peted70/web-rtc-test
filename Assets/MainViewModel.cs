@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using PeerConnectionClient.Model;
 using System;
 using System.Linq;
+using Windows.Media.MediaProperties;
 #if ENABLE_WINMD_SUPPORT
 using Windows.UI.Core;
 using Org.WebRtc;
@@ -28,14 +29,28 @@ public class MainViewModel : MonoBehaviour
 #endif
 
     // Use this for initialization
-    void Start()
+    async void Start()
     {
-#if ENABLE_WINMD_SUPPORT 
+#if ENABLE_WINMD_SUPPORT
+        await Org.WebRtc.WebRTC.RequestAccessForMediaCapture();
+
         WebRTC.Initialize(Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher);
+
         Conductor.Instance.Signaller.OnPeerConnected += (peerId, peerName) =>
         {
-            SelectedPeer = new Peer { Id = peerId, Name = peerName };
+            if (peerName.ToLower().Contains("mtaultybook"))
+            {
+                SelectedPeer = new Peer { Id = peerId, Name = peerName };
+            }
         };
+        this.IsMicrophoneEnabled = true;
+
+        this.VideoLoopbackEnabled = true;
+        Conductor.Instance.EnableLocalVideoStream();
+
+        this.IsCameraEnabled = true;
+        this._microphoneIsOn = true;
+
         ConnectCommandExecute(null);
 
         Conductor.Instance.OnAddRemoteStream += Conductor_OnAddRemoteStream;
@@ -54,16 +69,39 @@ public class MainViewModel : MonoBehaviour
         VideoCodecs = new List<CodecInfo>();
 
         // Order the video codecs so that the stable VP8 is in front.
-        var videoCodecList = WebRTC.GetVideoCodecs().OrderBy(codec =>
-        {
-            switch (codec.Name)
-            {
-                case "VP8": return 1;
-                case "VP9": return 2;
-                case "H264": return 3;
-                default: return 99;
-            }
-        });
+        // MIKET - do we want to switch this to H264?
+        //var videoCodecList = WebRTC.GetVideoCodecs().OrderBy(
+        //     codec =>
+        //    {
+        //        switch (codec.Name)
+        //        {
+        //            case "VP8": 
+        //                return 1;
+        //            case "VP9": 
+        //                return 2;
+        //            case "H264": 
+        //                return 3;
+        //            default: 
+        //                return 99;
+        //        }
+        //    }
+        //);
+        var videoCodecList = WebRTC.GetVideoCodecs().Where(c => c.Name == "H264");
+             //codec =>
+        //    {
+        //        switch (codec.Name)
+        //        {
+        //            case "VP8":
+        //                return 1;
+        //            case "VP9":
+        //                return 2;
+        //            case "H264":
+        //                return 3;
+        //            default:
+        //                return 99;
+        //        }
+        //    }
+        //);
 
         // Load the supported audio/video information into the Settings controls
         foreach (var audioCodec in audioCodecList)
@@ -78,16 +116,16 @@ public class MainViewModel : MonoBehaviour
         {
             //if (settings.Values["SelectedAudioCodecName"] != null)
             //{
-                string name = "";// Convert.ToString(settings.Values["SelectedAudioCodecName"]);
-                foreach (var audioCodec in AudioCodecs)
+            string name = "";// Convert.ToString(settings.Values["SelectedAudioCodecName"]);
+            foreach (var audioCodec in AudioCodecs)
+            {
+                string audioCodecName = audioCodec.Name;
+                if (audioCodecName == name)
                 {
-                    string audioCodecName = audioCodec.Name;
-                    if (audioCodecName == name)
-                    {
-                        SelectedAudioCodec = audioCodec;
-                        break;
-                    }
+                    SelectedAudioCodec = audioCodec;
+                    break;
                 }
+            }
             //}
             if (SelectedAudioCodec == null)
             {
@@ -130,6 +168,9 @@ public class MainViewModel : MonoBehaviour
                 IsReadyToDisconnect = false;
             });
         };
+
+        Conductor.Instance.VideoCaptureProfile = new CaptureCapability(1280, 720, 30, null);
+        Conductor.Instance.UpdatePreferredFrameFormat();
 
         // Connection between the current user and a peer is closed event handler
         Conductor.Instance.OnPeerConnectionClosed += () =>
@@ -271,6 +312,9 @@ public class MainViewModel : MonoBehaviour
                 UnityEngine.WSA.Application.InvokeOnAppThread(() =>
                 {
                     GameObject go = GameObject.Find("Control");
+
+                    // MIKET: Should this be I420? Unsure why it's I420? I thought there was only H264
+                    // support?
                     go.GetComponent<ControlScript>().CreateLocalMediaStreamSource(_selfVideoTrack, "I420", "SELF");
 
                 }, false);
@@ -341,10 +385,10 @@ public class MainViewModel : MonoBehaviour
     void Update()
     {
 #if ENABLE_WINMD_SUPPORT
-        if (!tryConnectToPeer && !IsConnectedToPeer)
+        if (!tryConnectToPeer && !IsConnectedToPeer && (SelectedPeer != null))
         {
-            ConnectToPeerCommandExecute(null);
             tryConnectToPeer = true;
+            ConnectToPeerCommandExecute(SelectedPeer);
         }
 #endif
     }
