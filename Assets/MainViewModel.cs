@@ -71,38 +71,22 @@ public class MainViewModel : MonoBehaviour
 
         // Order the video codecs so that the stable VP8 is in front.
         // MIKET - do we want to switch this to H264?
-        //var videoCodecList = WebRTC.GetVideoCodecs().OrderBy(
-        //     codec =>
-        //    {
-        //        switch (codec.Name)
-        //        {
-        //            case "VP8": 
-        //                return 1;
-        //            case "VP9": 
-        //                return 2;
-        //            case "H264": 
-        //                return 3;
-        //            default: 
-        //                return 99;
-        //        }
-        //    }
-        //);
-        var videoCodecList = WebRTC.GetVideoCodecs().Where(c => c.Name == "H264");
-             //codec =>
-        //    {
-        //        switch (codec.Name)
-        //        {
-        //            case "VP8":
-        //                return 1;
-        //            case "VP9":
-        //                return 2;
-        //            case "H264":
-        //                return 3;
-        //            default:
-        //                return 99;
-        //        }
-        //    }
-        //);
+        var videoCodecList = WebRTC.GetVideoCodecs().OrderBy(
+             codec =>
+            {
+                switch (codec.Name)
+                {
+                    case "VP8":
+                        return 1;
+                    case "VP9":
+                        return 2;
+                    case "H264":
+                        return 3;
+                    default:
+                        return 99;
+                }
+            }
+        );
 
         // Load the supported audio/video information into the Settings controls
         foreach (var audioCodec in audioCodecList)
@@ -170,7 +154,7 @@ public class MainViewModel : MonoBehaviour
             });
         };
 
-        Conductor.Instance.VideoCaptureProfile = new CaptureCapability(1280, 720, 30, null);
+        Conductor.Instance.VideoCaptureProfile = new CaptureCapability(896, 504, 30, null);
         Conductor.Instance.UpdatePreferredFrameFormat();
 
         // Connection between the current user and a peer is closed event handler

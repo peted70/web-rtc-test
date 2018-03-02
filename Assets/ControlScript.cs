@@ -24,8 +24,9 @@ public class ControlScript : MonoBehaviour
         IntPtr playbackTexture = IntPtr.Zero;
         ControlScript.Plugin.GetLocalPrimaryTexture(this.LocalTextureWidth, this.LocalTextureHeight, out playbackTexture);
         LocalVideoImage.texture = (Texture)Texture2D.CreateExternalTexture((int)this.LocalTextureWidth, (int)this.LocalTextureHeight, (TextureFormat)14, false, false, playbackTexture);
+
 #if ENABLE_WINMD_SUPPORT
-       ControlScript.Plugin.LoadLocalMediaStreamSource((MediaStreamSource)Org.WebRtc.Media.CreateMedia().CreateMediaStreamSource((MediaVideoTrack)track, type, id));
+        ControlScript.Plugin.LoadLocalMediaStreamSource((MediaStreamSource)Org.WebRtc.Media.CreateMedia().CreateMediaStreamSource((MediaVideoTrack)track, type, id));
 #endif
         ControlScript.Plugin.LocalPlay();
     }
