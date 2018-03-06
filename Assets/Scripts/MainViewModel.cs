@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using PeerConnectionClient.Model;
 using System;
 using System.Linq;
 #if ENABLE_WINMD_SUPPORT
-using Windows.Media.MediaProperties;
 using Windows.UI.Core;
 using Org.WebRtc;
 using PeerConnectionClient.Signalling;
@@ -33,7 +31,7 @@ public class MainViewModel : MonoBehaviour
     async void Start()
     {
 #if ENABLE_WINMD_SUPPORT
-        await Org.WebRtc.WebRTC.RequestAccessForMediaCapture();
+        await WebRTC.RequestAccessForMediaCapture();
 
         WebRTC.Initialize(Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher);
 
@@ -99,9 +97,7 @@ public class MainViewModel : MonoBehaviour
 
         if (AudioCodecs.Count > 0)
         {
-            //if (settings.Values["SelectedAudioCodecName"] != null)
-            //{
-            string name = "";// Convert.ToString(settings.Values["SelectedAudioCodecName"]);
+            string name = "";
             foreach (var audioCodec in AudioCodecs)
             {
                 string audioCodecName = audioCodec.Name;
@@ -111,7 +107,7 @@ public class MainViewModel : MonoBehaviour
                     break;
                 }
             }
-            //}
+
             if (SelectedAudioCodec == null)
             {
                 SelectedAudioCodec = AudioCodecs.First();
@@ -125,9 +121,7 @@ public class MainViewModel : MonoBehaviour
 
         if (VideoCodecs.Count > 0)
         {
-            //if (settings.Values["SelectedVideoCodecName"] != null)
-            //{
-            string name = "";// Convert.ToString(settings.Values["SelectedVideoCodecName"]);
+            string name = "";
             foreach (var videoCodec in VideoCodecs)
             {
                 string videoCodecName = videoCodec.Name;
@@ -137,7 +131,6 @@ public class MainViewModel : MonoBehaviour
                     break;
                 }
             }
-            //}
             if (SelectedVideoCodec == null)
             {
                 SelectedVideoCodec = VideoCodecs.First();
@@ -165,7 +158,7 @@ public class MainViewModel : MonoBehaviour
                 IsConnectedToPeer = false;
                 UnityEngine.WSA.Application.InvokeOnAppThread(() =>
                 {
-                    UnityEngine.GameObject go = UnityEngine.GameObject.Find("Control");
+                    GameObject go = GameObject.Find("Control");
                     go.GetComponent<ControlScript>().DestroyLocalMediaStreamSource();
                     go.GetComponent<ControlScript>().DestroyRemoteMediaStreamSource();
                 }, false);

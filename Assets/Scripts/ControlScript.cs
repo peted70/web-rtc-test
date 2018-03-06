@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using UnityEngine.Internal;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 #if ENABLE_WINMD_SUPPORT
 using Org.WebRtc;
 using Windows.Media.Core;
@@ -15,45 +12,41 @@ public class ControlScript : MonoBehaviour
     public uint LocalTextureHeight;
     public uint RemoteTextureWidth;
     public uint RemoteTextureHeight;
-    public RawImage LocalVideoImage;
-    public RawImage RemoteVideoImage;
     public GameObject RemoteTexture;
     public GameObject LocalTexture;
 
     public void CreateLocalMediaStreamSource(object track, string type, string id)
     {
-        ControlScript.Plugin.CreateLocalMediaPlayback();
+        Plugin.CreateLocalMediaPlayback();
         IntPtr playbackTexture = IntPtr.Zero;
-        ControlScript.Plugin.GetLocalPrimaryTexture(this.LocalTextureWidth, this.LocalTextureHeight, out playbackTexture);
-        LocalVideoImage.texture = LocalTexture.GetComponent<Renderer>().sharedMaterial.mainTexture = (Texture)Texture2D.CreateExternalTexture((int)this.LocalTextureWidth, (int)this.LocalTextureHeight, (TextureFormat)14, false, false, playbackTexture);
+        Plugin.GetLocalPrimaryTexture(LocalTextureWidth, LocalTextureHeight, out playbackTexture);
+        LocalTexture.GetComponent<Renderer>().sharedMaterial.mainTexture = Texture2D.CreateExternalTexture((int)LocalTextureWidth, (int)LocalTextureHeight, (TextureFormat)14, false, false, playbackTexture);
 #if ENABLE_WINMD_SUPPORT
-       ControlScript.Plugin.LoadLocalMediaStreamSource((MediaStreamSource)Org.WebRtc.Media.CreateMedia().CreateMediaStreamSource((MediaVideoTrack)track, type, id));
+        Plugin.LoadLocalMediaStreamSource((MediaStreamSource)Media.CreateMedia().CreateMediaStreamSource((MediaVideoTrack)track, type, id));
 #endif
-        ControlScript.Plugin.LocalPlay();
+        Plugin.LocalPlay();
     }
 
     public void DestroyLocalMediaStreamSource()
     {
-        this.LocalVideoImage.texture = null;
-        ControlScript.Plugin.ReleaseLocalMediaPlayback();
+        Plugin.ReleaseLocalMediaPlayback();
     }
 
     public void CreateRemoteMediaStreamSource(object track, string type, string id)
     {
-        ControlScript.Plugin.CreateRemoteMediaPlayback();
+        Plugin.CreateRemoteMediaPlayback();
         IntPtr playbackTexture = IntPtr.Zero;
-        ControlScript.Plugin.GetRemotePrimaryTexture(this.RemoteTextureWidth, this.RemoteTextureHeight, out playbackTexture);
-        this.RemoteVideoImage.texture = RemoteTexture.GetComponent<Renderer>().sharedMaterial.mainTexture = (Texture)Texture2D.CreateExternalTexture((int)this.RemoteTextureWidth, (int)this.RemoteTextureHeight, (TextureFormat)14, false, false, playbackTexture);
+        Plugin.GetRemotePrimaryTexture(RemoteTextureWidth, RemoteTextureHeight, out playbackTexture);
+        RemoteTexture.GetComponent<Renderer>().sharedMaterial.mainTexture = Texture2D.CreateExternalTexture((int)RemoteTextureWidth, (int)RemoteTextureHeight, (TextureFormat)14, false, false, playbackTexture);
 #if ENABLE_WINMD_SUPPORT
-        ControlScript.Plugin.LoadRemoteMediaStreamSource((MediaStreamSource)Org.WebRtc.Media.CreateMedia().CreateMediaStreamSource((MediaVideoTrack)track, type, id));
+        Plugin.LoadRemoteMediaStreamSource((MediaStreamSource)Media.CreateMedia().CreateMediaStreamSource((MediaVideoTrack)track, type, id));
 #endif
-        ControlScript.Plugin.RemotePlay();
+        Plugin.RemotePlay();
     }
 
     public void DestroyRemoteMediaStreamSource()
     {
-        this.RemoteVideoImage.texture = null;
-        ControlScript.Plugin.ReleaseRemoteMediaPlayback();
+        Plugin.ReleaseRemoteMediaPlayback();
     }
 
     private static class Plugin
