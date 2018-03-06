@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -113,6 +113,35 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &203441517
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 203441518}
+  m_Layer: 0
+  m_Name: HologramCollection
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &203441518
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 203441517}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1027309293}
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &632750837
 GameObject:
   m_ObjectHideFlags: 0
@@ -127,7 +156,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &632750838
 RectTransform:
   m_ObjectHideFlags: 0
@@ -228,6 +257,53 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1027309292
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 203441518}
+    m_Modifications:
+    - target: {fileID: 4928949237914088, guid: 3f98fe6b4190af84d8ff934ceea0e3ec, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928949237914088, guid: 3f98fe6b4190af84d8ff934ceea0e3ec, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928949237914088, guid: 3f98fe6b4190af84d8ff934ceea0e3ec, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928949237914088, guid: 3f98fe6b4190af84d8ff934ceea0e3ec, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928949237914088, guid: 3f98fe6b4190af84d8ff934ceea0e3ec, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928949237914088, guid: 3f98fe6b4190af84d8ff934ceea0e3ec, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928949237914088, guid: 3f98fe6b4190af84d8ff934ceea0e3ec, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928949237914088, guid: 3f98fe6b4190af84d8ff934ceea0e3ec, type: 2}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 3f98fe6b4190af84d8ff934ceea0e3ec, type: 2}
+  m_IsPrefabParent: 0
+--- !u!4 &1027309293 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 4928949237914088, guid: 3f98fe6b4190af84d8ff934ceea0e3ec,
+    type: 2}
+  m_PrefabInternal: {fileID: 1027309292}
 --- !u!1 &1195169479
 GameObject:
   m_ObjectHideFlags: 0
@@ -355,6 +431,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1350761906 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1553571397241330, guid: 3f98fe6b4190af84d8ff934ceea0e3ec,
+    type: 2}
+  m_PrefabInternal: {fileID: 1027309292}
 --- !u!1 &1598099393
 GameObject:
   m_ObjectHideFlags: 0
@@ -614,7 +695,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ServerIP: 52.174.16.92
   PortNumber: 8888
-  AutoConnect: mtaultybook
+  AutoConnect: meg0g5g
 --- !u!4 &1882463642
 Transform:
   m_ObjectHideFlags: 0
@@ -645,3 +726,10 @@ MonoBehaviour:
   RemoteTextureHeight: 480
   LocalVideoImage: {fileID: 1598099395}
   RemoteVideoImage: {fileID: 1836615521}
+  RemoteTexture: {fileID: 1350761906}
+  LocalTexture: {fileID: 2036980354}
+--- !u!1 &2036980354 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1689054613996480, guid: 3f98fe6b4190af84d8ff934ceea0e3ec,
+    type: 2}
+  m_PrefabInternal: {fileID: 1027309292}

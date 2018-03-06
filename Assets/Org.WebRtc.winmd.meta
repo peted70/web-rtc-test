@@ -61,6 +61,12 @@ PluginImporter:
       settings:
         CPU: x86_64
   - first:
+      Standalone: LinuxUniversal
+    second:
+      enabled: 0
+      settings:
+        CPU: None
+  - first:
       Standalone: OSXUniversal
     second:
       enabled: 0

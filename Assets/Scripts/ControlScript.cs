@@ -17,16 +17,17 @@ public class ControlScript : MonoBehaviour
     public uint RemoteTextureHeight;
     public RawImage LocalVideoImage;
     public RawImage RemoteVideoImage;
+    public GameObject RemoteTexture;
+    public GameObject LocalTexture;
 
     public void CreateLocalMediaStreamSource(object track, string type, string id)
     {
         ControlScript.Plugin.CreateLocalMediaPlayback();
         IntPtr playbackTexture = IntPtr.Zero;
         ControlScript.Plugin.GetLocalPrimaryTexture(this.LocalTextureWidth, this.LocalTextureHeight, out playbackTexture);
-        LocalVideoImage.texture = (Texture)Texture2D.CreateExternalTexture((int)this.LocalTextureWidth, (int)this.LocalTextureHeight, (TextureFormat)14, false, false, playbackTexture);
-
+        LocalVideoImage.texture = LocalTexture.GetComponent<Renderer>().sharedMaterial.mainTexture = (Texture)Texture2D.CreateExternalTexture((int)this.LocalTextureWidth, (int)this.LocalTextureHeight, (TextureFormat)14, false, false, playbackTexture);
 #if ENABLE_WINMD_SUPPORT
-        ControlScript.Plugin.LoadLocalMediaStreamSource((MediaStreamSource)Org.WebRtc.Media.CreateMedia().CreateMediaStreamSource((MediaVideoTrack)track, type, id));
+       ControlScript.Plugin.LoadLocalMediaStreamSource((MediaStreamSource)Org.WebRtc.Media.CreateMedia().CreateMediaStreamSource((MediaVideoTrack)track, type, id));
 #endif
         ControlScript.Plugin.LocalPlay();
     }
@@ -42,7 +43,7 @@ public class ControlScript : MonoBehaviour
         ControlScript.Plugin.CreateRemoteMediaPlayback();
         IntPtr playbackTexture = IntPtr.Zero;
         ControlScript.Plugin.GetRemotePrimaryTexture(this.RemoteTextureWidth, this.RemoteTextureHeight, out playbackTexture);
-        this.RemoteVideoImage.texture = (Texture)Texture2D.CreateExternalTexture((int)this.RemoteTextureWidth, (int)this.RemoteTextureHeight, (TextureFormat)14, false, false, playbackTexture);
+        this.RemoteVideoImage.texture = RemoteTexture.GetComponent<Renderer>().sharedMaterial.mainTexture = (Texture)Texture2D.CreateExternalTexture((int)this.RemoteTextureWidth, (int)this.RemoteTextureHeight, (TextureFormat)14, false, false, playbackTexture);
 #if ENABLE_WINMD_SUPPORT
         ControlScript.Plugin.LoadRemoteMediaStreamSource((MediaStreamSource)Org.WebRtc.Media.CreateMedia().CreateMediaStreamSource((MediaVideoTrack)track, type, id));
 #endif
