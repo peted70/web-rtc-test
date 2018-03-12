@@ -1,99 +1,63 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using UnityEngine;
-using UnityEngine.Internal;
-using UnityEngine.Serialization;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
+
 #if ENABLE_WINMD_SUPPORT
+using ConversationLibrary;
+using ConversationLibrary.Interfaces;
+using ConversationLibrary.Utility;
+using PeerConnectionClient.Signalling;
 using Org.WebRtc;
-using Windows.Media.Core;
+using Windows.Networking.Connectivity;
 #endif
 
 public class ControlScript : MonoBehaviour
 {
-    public uint LocalTextureWidth;
-    public uint LocalTextureHeight;
-    public uint RemoteTextureWidth;
-    public uint RemoteTextureHeight;
-    public RawImage LocalVideoImage;
-    public RawImage RemoteVideoImage;
-    public GameObject RemoteTexture;
-    public GameObject LocalTexture;
-
-    public void CreateLocalMediaStreamSource(object track, string type, string id)
-    {
-        ControlScript.Plugin.CreateLocalMediaPlayback();
-        IntPtr playbackTexture = IntPtr.Zero;
-        ControlScript.Plugin.GetLocalPrimaryTexture(this.LocalTextureWidth, this.LocalTextureHeight, out playbackTexture);
-        LocalVideoImage.texture = LocalTexture.GetComponent<Renderer>().sharedMaterial.mainTexture = (Texture)Texture2D.CreateExternalTexture((int)this.LocalTextureWidth, (int)this.LocalTextureHeight, (TextureFormat)14, false, false, playbackTexture);
-#if ENABLE_WINMD_SUPPORT
-       ControlScript.Plugin.LoadLocalMediaStreamSource((MediaStreamSource)Org.WebRtc.Media.CreateMedia().CreateMediaStreamSource((MediaVideoTrack)track, type, id));
-#endif
-        ControlScript.Plugin.LocalPlay();
-    }
-
-    public void DestroyLocalMediaStreamSource()
-    {
-        this.LocalVideoImage.texture = null;
-        ControlScript.Plugin.ReleaseLocalMediaPlayback();
-    }
-
-    public void CreateRemoteMediaStreamSource(object track, string type, string id)
-    {
-        ControlScript.Plugin.CreateRemoteMediaPlayback();
-        IntPtr playbackTexture = IntPtr.Zero;
-        ControlScript.Plugin.GetRemotePrimaryTexture(this.RemoteTextureWidth, this.RemoteTextureHeight, out playbackTexture);
-        this.RemoteVideoImage.texture = RemoteTexture.GetComponent<Renderer>().sharedMaterial.mainTexture = (Texture)Texture2D.CreateExternalTexture((int)this.RemoteTextureWidth, (int)this.RemoteTextureHeight, (TextureFormat)14, false, false, playbackTexture);
-#if ENABLE_WINMD_SUPPORT
-        ControlScript.Plugin.LoadRemoteMediaStreamSource((MediaStreamSource)Org.WebRtc.Media.CreateMedia().CreateMediaStreamSource((MediaVideoTrack)track, type, id));
-#endif
-        ControlScript.Plugin.RemotePlay();
-    }
-
-    public void DestroyRemoteMediaStreamSource()
-    {
-        this.RemoteVideoImage.texture = null;
-        ControlScript.Plugin.ReleaseRemoteMediaPlayback();
-    }
-
-    private static class Plugin
-    {
-        [DllImport("MediaEngineUWP", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void CreateLocalMediaPlayback();
-
-        [DllImport("MediaEngineUWP", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void CreateRemoteMediaPlayback();
-
-        [DllImport("MediaEngineUWP", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void ReleaseLocalMediaPlayback();
-
-        [DllImport("MediaEngineUWP", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void ReleaseRemoteMediaPlayback();
-
-        [DllImport("MediaEngineUWP", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void GetLocalPrimaryTexture(uint width, uint height, out IntPtr playbackTexture);
-
-        [DllImport("MediaEngineUWP", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void GetRemotePrimaryTexture(uint width, uint height, out IntPtr playbackTexture);
+    public TextureDetails TextureDetails;
+    public string ServerIP = "52.174.16.92";
+    public int PortNumber = 8888;
+    public bool IsInitiator = true;
 
 #if ENABLE_WINMD_SUPPORT
-        [DllImport("MediaEngineUWP", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void LoadLocalMediaStreamSource(MediaStreamSource IMediaSourceHandler);
+    async void Start()
+    {
+        CheapContainer.Register<ISignallingService, Signaller>();
+        CheapContainer.Register<IDispatcherProvider, DispatcherProvider>();
+        CheapContainer.Register<ITextureDetailsProvider, TextureDetailsProvider>();
 
-        [DllImport("MediaEngineUWP", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void LoadRemoteMediaStreamSource(MediaStreamSource IMediaSourceHandler);
-#endif
+        var provider = CheapContainer.Resolve<ITextureDetailsProvider>();
+        provider.Details = this.TextureDetails;
 
-        [DllImport("MediaEngineUWP", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void LocalPlay();
+        CheapContainer.Register<IMediaManager, MediaManager>();
+        CheapContainer.Register<IPeerManager, PeerManager>();
+        CheapContainer.Register<IConversationManager, ConversationManager>();
 
-        [DllImport("MediaEngineUWP", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void RemotePlay();
+        var conversationManager = CheapContainer.Resolve<IConversationManager>();
+        conversationManager.IsInitiator = this.IsInitiator;
 
-        [DllImport("MediaEngineUWP", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void LocalPause();
+        // TODO: not really found a good way of abstracting this but I think it has to be called.
+        // Does it need moving into the Media Manager and linking to the widths/heights in there?
+        // I think I ramped it down to 856? 896? some such.
+        WebRTC.SetPreferredVideoCaptureFormat(1280, 720, 30);
 
-        [DllImport("MediaEngineUWP", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void RemotePause();
+        await conversationManager.InitialiseAsync(this.HostName);
+        
+        if (await conversationManager.ConnectToSignallingAsync(this.ServerIP, this.PortNumber))
+        {
+            // We're good!
+        }
     }
+    string HostName
+    {
+        get
+        {
+            var candidate = 
+                NetworkInformation.GetHostNames()
+                .Where(n => !string.IsNullOrEmpty(n.DisplayName)).FirstOrDefault();
+
+            // Note - only candidate below can be null, not the Displayname
+            return (candidate?.DisplayName ?? "Anonymous");
+        }
+    }
+#endif
 }

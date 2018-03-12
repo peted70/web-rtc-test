@@ -8,32 +8,22 @@
 // PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 //
 //*********************************************************
-#if WINDOWS_UWP && !UNITY_EDITOR
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Windows.Data.Json;
-using Windows.Networking;
-using Windows.Networking.Sockets;
-using Windows.Storage.Streams;
-
 namespace PeerConnectionClient.Signalling
 {
-    public delegate void SignedInDelegate();
-    public delegate void DisconnectedDelegate();
-    public delegate void PeerConnectedDelegate(int id, string name);
-    public delegate void PeerDisonnectedDelegate(int peer_id);
-    public delegate void PeerHangupDelegate(int peer_id);
-    public delegate void MessageFromPeerDelegate(int peer_id, string message);
-    public delegate void MessageSentDelegate(int err);
-    public delegate void ServerConnectionFailureDelegate();
+    using ConversationLibrary.Interfaces;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
+    using Windows.Networking;
+    using Windows.Networking.Sockets;
+    using Windows.Storage.Streams;
 
     /// <summary>
     /// Signaller instance is used to fire connection events.
     /// </summary>
-    class Signaller
+    public class Signaller : ISignallingService
     {
         // Connection events
         public event SignedInDelegate OnSignedIn;
@@ -97,7 +87,7 @@ namespace PeerConnectionClient.Signalling
         /// <param name="server">Host name/IP.</param>
         /// <param name="port">Port to connect.</param>
         /// <param name="client_name">Client name.</param>
-        public async void Connect(string server, string port, string client_name)
+        public async Task ConnectAsync(string server, string port, string client_name)
         {
             try
             {
@@ -432,7 +422,7 @@ namespace PeerConnectionClient.Signalling
                 }
                 else if (_state == State.SIGNING_OUT_WAITING)
                 {
-                    await SignOut();
+                    await SignOutAsync();
                 }
 
                 if (_state == State.SIGNING_IN)
@@ -530,7 +520,7 @@ namespace PeerConnectionClient.Signalling
         /// Disconnects the user from the server.
         /// </summary>
         /// <returns>True if the user is disconnected from the server.</returns>
-        public async Task<bool> SignOut()
+        public async Task<bool> SignOutAsync()
         {
             if (_state == State.NOT_CONNECTED || _state == State.SIGNING_OUT)
                 return true;
@@ -579,8 +569,10 @@ namespace PeerConnectionClient.Signalling
         /// <param name="peerId">ID of the peer to send a message to.</param>
         /// <param name="message">Message to send.</param>
         /// <returns>True if the message was sent.</returns>
-        public async Task<bool> SendToPeer(int peerId, string message)
+        public async Task<bool> SendToPeerAsync(object peerId, string message)
         {
+            var numericalPeerId = (int)peerId;
+
             if (_state != State.CONNECTED)
             {
                 return false;
@@ -588,7 +580,7 @@ namespace PeerConnectionClient.Signalling
 
             Debug.Assert(IsConnected());
 
-            if (!IsConnected() || peerId == -1)
+            if (!IsConnected() || numericalPeerId == -1)
             {
                 return false;
             }
@@ -600,19 +592,8 @@ namespace PeerConnectionClient.Signalling
                 "\r\n" +
                 "{3}",
                 _myId, peerId, message.Length, message);
-            return await ControlSocketRequestAsync(buffer);
-        }
 
-        /// <summary>
-        /// Sends a message to a peer.
-        /// </summary>
-        /// <param name="peerId">ID of the peer to send a message to.</param>
-        /// <param name="json">The json message.</param>
-        /// <returns>True if the message is sent.</returns>
-        public async Task<bool> SendToPeer(int peerId, IJsonValue json)
-        {
-            string message = json.Stringify();
-            return await SendToPeer(peerId, message);
+            return await ControlSocketRequestAsync(buffer);
         }
     }
 
@@ -641,4 +622,3 @@ namespace PeerConnectionClient.Signalling
         }
     }
 }
-#endif
