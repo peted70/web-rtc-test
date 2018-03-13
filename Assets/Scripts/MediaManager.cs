@@ -34,8 +34,8 @@ public class MediaManager : IMediaManager
 
         if (track != null)
         {
-            // TODO: figure out why this is I420
-            this.CreateLocalMediaStreamSource(track, track.Kind, "SELF");
+            // TODO: figure out why this is I420 rather than passing the Kind property.
+            this.CreateLocalMediaStreamSource(track, "I420", "SELF");
         }
     }
 
@@ -51,10 +51,12 @@ public class MediaManager : IMediaManager
     }
     void InvokeOnUnityMainThread(AppCallbackItem callback)
     {
+        // TODO: which thread is this meant to be on?
         UnityEngine.WSA.Application.InvokeOnAppThread(callback,false);
     }
     void InvokeOnUnityUIThread(AppCallbackItem callback)
     {
+        // TODO: which thread is this meant to be on?
         UnityEngine.WSA.Application.InvokeOnUIThread(callback, false);
     }
     public async Task CreateAsync(bool audioEnabled = true, bool videoEnabled = true)

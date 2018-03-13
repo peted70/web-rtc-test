@@ -38,7 +38,7 @@ public class ControlScript : MonoBehaviour
         // TODO: not really found a good way of abstracting this but I think it has to be called.
         // Does it need moving into the Media Manager and linking to the widths/heights in there?
         // I think I ramped it down to 856? 896? some such.
-        WebRTC.SetPreferredVideoCaptureFormat(1280, 720, 30);
+        WebRTC.SetPreferredVideoCaptureFormat(896, 504, 30);
 
         await conversationManager.InitialiseAsync(this.HostName);
         
