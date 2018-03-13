@@ -30,13 +30,13 @@ public class MediaManager : IMediaManager
 
     public async Task AddLocalStreamAsync(MediaStream stream)
     {
-        var track = stream?.GetVideoTracks()?.FirstOrDefault();
+        //var track = stream?.GetVideoTracks()?.FirstOrDefault();
 
-        if (track != null)
-        {
-            // TODO: figure out why this is I420 rather than passing the Kind property.
-            this.CreateLocalMediaStreamSource(track, "I420", "SELF");
-        }
+        //if (track != null)
+        //{
+        //    // TODO: figure out why this is I420 rather than passing the Kind property.
+        //    this.CreateLocalMediaStreamSource(track, "I420", "SELF");
+        //}
     }
 
     public async Task AddRemoteStreamAsync(MediaStream stream)
@@ -46,7 +46,7 @@ public class MediaManager : IMediaManager
         if (track != null)
         {
             this.InvokeOnUnityMainThread(
-                () => this.CreateRemoteMediaStreamSource(track, track.Kind, "PEER"));
+                () => this.CreateRemoteMediaStreamSource(track, "H264", "PEER"));
         }
     }
     void InvokeOnUnityMainThread(AppCallbackItem callback)

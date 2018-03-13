@@ -8,6 +8,6 @@ namespace ConversationLibrary.Interfaces
 
         Task<bool> ConnectToSignallingAsync(string ipAddress, int port);
 
-        Task InitialiseAsync(string localHostName);
+        Task InitialiseAsync(string localHostName, string remotePeerName);
     }
 }

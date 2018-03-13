@@ -17,6 +17,7 @@ public class ControlScript : MonoBehaviour
     public string ServerIP = "52.174.16.92";
     public int PortNumber = 8888;
     public bool IsInitiator = true;
+    public string remotePeerName = "mtaultybook";
 
 #if ENABLE_WINMD_SUPPORT
     async void Start()
@@ -40,7 +41,7 @@ public class ControlScript : MonoBehaviour
         // I think I ramped it down to 856? 896? some such.
         WebRTC.SetPreferredVideoCaptureFormat(896, 504, 30);
 
-        await conversationManager.InitialiseAsync(this.HostName);
+        await conversationManager.InitialiseAsync(this.HostName, this.remotePeerName);
         
         if (await conversationManager.ConnectToSignallingAsync(this.ServerIP, this.PortNumber))
         {

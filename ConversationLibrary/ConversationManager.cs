@@ -38,13 +38,14 @@
             get; set;
         }
 
-        public async Task InitialiseAsync(string localHostName)
+        public async Task InitialiseAsync(string localHostName, string remotePeerName)
         {
             if (!this.initialised)
             {
                 this.initialised = true;
-
+                
                 this.hostName = localHostName;
+                this.remotePeerName = remotePeerName;
 
                 // I find that if I don't do this before Initialize() then I crash.
                 await WebRTC.RequestAccessForMediaCapture();
@@ -106,7 +107,7 @@
         async void OnSignallingPeerConnected(object id, string name)
         {
             // We are simply going to jump at the first opportunity we get.
-            if (this.IsInitiator && (name != this.hostName))
+            if (this.IsInitiator && (string.Compare(name, this.remotePeerName, true) == 0))
             {
                 // We have found a peer to connect to so we will connect to it.
                 this.peerManager.CreateConnectionForPeerAsync((int)id);
@@ -195,6 +196,7 @@
         ISignallingService signaller;
         IDispatcherProvider dispatcherProvider;
         string hostName;
+        string remotePeerName;
         bool initialised;
     }
 }
