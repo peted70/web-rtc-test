@@ -8,7 +8,9 @@ namespace ConversationLibrary.Interfaces
         object PeerId { get; }
         event RTCPeerConnectionIceEventDelegate OnIceCandidate;
         void CreateConnectionForPeerAsync(object peerId);
-        Task<RTCSessionDescription> CreateAndSetLocalOfferAsync();
+        Task<RTCSessionDescription> CreateAndSetLocalOfferAsync(
+            string videoCodecName, int? videoClockRate);
+
         Task AddIceCandidateAsync(RTCIceCandidate iceCandidate);
         Task<RTCSessionDescription> AcceptRemoteOfferAsync(object peerId, string sdpDescription);
         Task AcceptRemoteAnswerAsync(string sdpAnswer);

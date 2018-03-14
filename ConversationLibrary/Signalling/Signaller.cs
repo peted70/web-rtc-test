@@ -277,13 +277,17 @@ namespace PeerConnectionClient.Signalling
             try
             {
                 var reader = new DataReader(socket.InputStream);
+
                 // Set the DataReader to only wait for available data
                 reader.InputStreamOptions = InputStreamOptions.Partial;
 
+                // MIKET: Changed this to async wait rather than to block the thread.
                 loadTask = reader.LoadAsync(0xffff);
-                bool succeeded = loadTask.AsTask().Wait(LONG_POLL_TIMEOUT_MS);
+                var delayTask = Task.Delay(LONG_POLL_TIMEOUT_MS);
 
-                if (!succeeded)
+                var completedTask = await Task.WhenAny(loadTask.AsTask(), delayTask);
+
+                if (completedTask == delayTask)
                 {
                     throw new TimeoutException("Timed out long polling, re-trying.");
                 }

@@ -6,7 +6,8 @@ namespace ConversationLibrary.Interfaces
     {
         bool IsInitiator { get; set; }
 
-        Task<bool> ConnectToSignallingAsync(string ipAddress, int port);
+        Task<bool> ConnectToSignallingAsync(string ipAddress, int port,
+            string videoCodecName = null, int? videoClockRate = null);
 
         Task InitialiseAsync(string localHostName, string remotePeerName);
     }

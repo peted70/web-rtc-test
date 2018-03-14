@@ -35,7 +35,8 @@ public class MediaManager : IMediaManager
         if (track != null)
         {
             // TODO: stop hardcoding I420?.
-            this.CreateLocalMediaStreamSource(track, "I420", "SELF");
+            this.InvokeOnUnityMainThread(
+                () => this.CreateLocalMediaStreamSource(track, LOCAL_VIDEO_FRAME_FORMAT, "SELF"));
         }
     }
 
@@ -47,7 +48,7 @@ public class MediaManager : IMediaManager
         {
             // TODO: stop hardcoding I420?.
             this.InvokeOnUnityMainThread(
-                () => this.CreateRemoteMediaStreamSource(track, "I420", "PEER"));
+                () => this.CreateRemoteMediaStreamSource(track, REMOTE_VIDEO_FRAME_FORMAT, "PEER"));
         }
     }
     void InvokeOnUnityMainThread(AppCallbackItem callback)
@@ -169,5 +170,9 @@ public class MediaManager : IMediaManager
     MediaVideoTrack remoteVideoTrack;
     MediaVideoTrack localVideoTrack;
     ITextureDetailsProvider textureDetails;
+
+    // TODO: temporary hard coding...
+    static readonly string LOCAL_VIDEO_FRAME_FORMAT = "I420";
+    static readonly string REMOTE_VIDEO_FRAME_FORMAT = "H264";
 }
 #endif

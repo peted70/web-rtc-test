@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using System.Threading.Tasks;
 
 #if ENABLE_WINMD_SUPPORT
 using ConversationLibrary;
@@ -41,18 +42,27 @@ public class ControlScript : MonoBehaviour
         // I think I ramped it down to 856? 896? some such.
         WebRTC.SetPreferredVideoCaptureFormat(896, 504, 30);
 
-        await conversationManager.InitialiseAsync(this.HostName, this.remotePeerName);
-        
-        if (await conversationManager.ConnectToSignallingAsync(this.ServerIP, this.PortNumber))
-        {
-            // We're good!
-        }
+        // TODO: This is here right now as it feels like a bunch of work gets marshalled
+        // back (via Sync Context?) to this thread which then gums up the UI but we'd 
+        // like to understand better what that work is.
+        Task.Run(
+            async () =>
+            {
+                await conversationManager.InitialiseAsync(this.HostName, this.remotePeerName);
+
+                if (await conversationManager.ConnectToSignallingAsync(this.ServerIP, this.PortNumber,
+                    "H264", 90000))
+                {
+                    // We're good!
+                }
+            }
+        );
     }
     string HostName
     {
         get
         {
-            var candidate = 
+            var candidate =
                 NetworkInformation.GetHostNames()
                 .Where(n => !string.IsNullOrEmpty(n.DisplayName)).FirstOrDefault();
 

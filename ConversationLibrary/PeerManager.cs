@@ -58,7 +58,8 @@
 
             return (answer);
         }
-        public async Task<RTCSessionDescription> CreateAndSetLocalOfferAsync()
+        public async Task<RTCSessionDescription> CreateAndSetLocalOfferAsync(
+            string videoCodecName = null, int? videoClockRate = null)
         {
             // Create the offer.
             var description = await this.peerConnection.CreateOffer();
@@ -68,6 +69,11 @@
             // when things didn't work for me without it.
             var filteredDescriptionSdp = SdpUtility.FilterToSupportedCodecs(description.Sdp);
 
+            if (!string.IsNullOrEmpty(videoCodecName))
+            {
+                SdpUtility.SelectCodecs(ref filteredDescriptionSdp,
+                    null, new CodecInfo(videoClockRate.Value, videoCodecName));
+            }
             description.Sdp = filteredDescriptionSdp;
 
             // Set that filtered offer description as our local description.

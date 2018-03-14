@@ -58,9 +58,13 @@
                 await this.mediaManager.AddLocalStreamAsync(this.mediaManager.UserMedia);
             }
         }
-        public async Task<bool> ConnectToSignallingAsync(string ipAddress, int port)
+        public async Task<bool> ConnectToSignallingAsync(string ipAddress, int port,
+            string videoCodecName = null, int? videoClockRate = null)
         {
             TaskCompletionSource<bool> signedIn = new TaskCompletionSource<bool>();
+
+            this.videoCodecName = videoCodecName;
+            this.videoClockRate = videoClockRate;
 
             // Have to do this here because PeerConnected fires from the signaller
             // *before* SignedIn fires from the signaller.
@@ -162,7 +166,8 @@
         async Task SendOfferToRemotePeerAsync()
         {
             // Create the offer.
-            var description = await this.peerManager.CreateAndSetLocalOfferAsync();
+            var description = await this.peerManager.CreateAndSetLocalOfferAsync(
+                this.videoCodecName, this.videoClockRate);
 
             var jsonMessage = description.ToJsonMessageString(
                 SignallerMessagingExtensions.MessageType.Offer);
@@ -198,5 +203,7 @@
         string hostName;
         string remotePeerName;
         bool initialised;
+        string videoCodecName;
+        int? videoClockRate;
     }
 }
