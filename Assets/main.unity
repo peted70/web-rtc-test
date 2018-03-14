@@ -460,6 +460,7 @@ MonoBehaviour:
   ServerIP: 52.174.16.92
   PortNumber: 8888
   IsInitiator: 1
+  remotePeerName: mtaultybook
 --- !u!1 &2036980354 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1689054613996480, guid: 3f98fe6b4190af84d8ff934ceea0e3ec,
