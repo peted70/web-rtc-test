@@ -281,7 +281,8 @@ namespace PeerConnectionClient.Signalling
                 reader.InputStreamOptions = InputStreamOptions.Partial;
 
                 loadTask = reader.LoadAsync(0xffff);
-                bool succeeded = loadTask.AsTask().Wait(20000);
+                bool succeeded = loadTask.AsTask().Wait(LONG_POLL_TIMEOUT_MS);
+
                 if (!succeeded)
                 {
                     throw new TimeoutException("Timed out long polling, re-trying.");
@@ -595,6 +596,7 @@ namespace PeerConnectionClient.Signalling
 
             return await ControlSocketRequestAsync(buffer);
         }
+        static readonly int LONG_POLL_TIMEOUT_MS = 2000;
     }
 
     /// <summary>

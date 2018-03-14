@@ -30,13 +30,13 @@ public class MediaManager : IMediaManager
 
     public async Task AddLocalStreamAsync(MediaStream stream)
     {
-        //var track = stream?.GetVideoTracks()?.FirstOrDefault();
+        var track = stream?.GetVideoTracks()?.FirstOrDefault();
 
-        //if (track != null)
-        //{
-        //    // TODO: figure out why this is I420 rather than passing the Kind property.
-        //    this.CreateLocalMediaStreamSource(track, "I420", "SELF");
-        //}
+        if (track != null)
+        {
+            // TODO: stop hardcoding I420?.
+            this.CreateLocalMediaStreamSource(track, "I420", "SELF");
+        }
     }
 
     public async Task AddRemoteStreamAsync(MediaStream stream)
@@ -45,18 +45,17 @@ public class MediaManager : IMediaManager
 
         if (track != null)
         {
+            // TODO: stop hardcoding I420?.
             this.InvokeOnUnityMainThread(
-                () => this.CreateRemoteMediaStreamSource(track, "H264", "PEER"));
+                () => this.CreateRemoteMediaStreamSource(track, "I420", "PEER"));
         }
     }
     void InvokeOnUnityMainThread(AppCallbackItem callback)
     {
-        // TODO: which thread is this meant to be on?
         UnityEngine.WSA.Application.InvokeOnAppThread(callback,false);
     }
     void InvokeOnUnityUIThread(AppCallbackItem callback)
     {
-        // TODO: which thread is this meant to be on?
         UnityEngine.WSA.Application.InvokeOnUIThread(callback, false);
     }
     public async Task CreateAsync(bool audioEnabled = true, bool videoEnabled = true)
@@ -67,6 +66,7 @@ public class MediaManager : IMediaManager
         // some piece of code that'll take some debugging.
         RTCMediaStreamConstraints constraints = new RTCMediaStreamConstraints()
         {
+            // TODO: switch audio back on, fix the crash.
             audioEnabled = false,
             videoEnabled = videoEnabled
         };
@@ -75,14 +75,14 @@ public class MediaManager : IMediaManager
 
     public void RemoveLocalStream()
     {
+        // TODO: is this ever getting called?
         this.InvokeOnUnityMainThread(
             () => this.DestroyLocalMediaStreamSource());
     }
 
     public void RemoveRemoteStream()
     {
-        this.InvokeOnUnityMainThread(
-            () => this.DestroyRemoteMediaStreamSource());
+        this.DestroyRemoteMediaStreamSource();
     }
 
     public void Shutdown()
@@ -135,17 +135,22 @@ public class MediaManager : IMediaManager
     void CreateRemoteMediaStreamSource(object track, string type, string id)
     {
         Plugin.CreateRemoteMediaPlayback();
+
         IntPtr playbackTexture = IntPtr.Zero;
+
         Plugin.GetRemotePrimaryTexture(
             this.textureDetails.Details.RemoteTextureWidth, 
             this.textureDetails.Details.RemoteTextureHeight, 
             out playbackTexture);
 
-        this.textureDetails.Details.RemoteTexture.GetComponent<Renderer>().sharedMaterial.mainTexture = 
-            (Texture)Texture2D.CreateExternalTexture(
-                (int)this.textureDetails.Details.RemoteTextureWidth, 
-                (int)this.textureDetails.Details.RemoteTextureHeight, 
-                (TextureFormat)14, false, false, playbackTexture);
+        // NB: creating textures and calling GetComponent<> has thread affinity for Unity
+        // in so far as I can tell.
+        var texture = (Texture)Texture2D.CreateExternalTexture(
+           (int)this.textureDetails.Details.RemoteTextureWidth,
+           (int)this.textureDetails.Details.RemoteTextureHeight,
+           (TextureFormat)14, false, false, playbackTexture);
+
+        this.textureDetails.Details.RemoteTexture.GetComponent<Renderer>().sharedMaterial.mainTexture = texture;
 
 #if ENABLE_WINMD_SUPPORT
         Plugin.LoadRemoteMediaStreamSource(
